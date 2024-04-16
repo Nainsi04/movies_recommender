@@ -73,21 +73,37 @@ if st.button('Show Recommendation'):
 import pickle
 import streamlit as st
 import requests
+import os
+
+# Get the absolute path of the directory where this script is located
+script_directory = os.path.dirname(os.path.abspath(__file__))
+
+# Define absolute paths to the pickled files
+movies_file = os.path.join(script_directory, 'movies.pkl')
+similarity_file = os.path.join(script_directory, 'similarity.pkl')
 
 # Function to fetch movie poster using TMDb API
 def fetch_poster(movie_id):
-    url = "https://api.themoviedb.org/3/movie/{}?api_key=YOUR_API_KEY&language=en-US".format(movie_id)  # Replace YOUR_API_KEY with your actual API key
+    # Replace 'YOUR_API_KEY' with your actual TMDb API key
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key=YOUR_API_KEY&language=en-US"
     data = requests.get(url)
     if data.status_code == 200:
         data = data.json()
         poster_path = data.get('poster_path')
         if poster_path:
-            full_path = "https://image.tmdb.org/t/p/w500/" + poster_path
+            full_path = f"https://image.tmdb.org/t/p/w500/{poster_path}"
             return full_path
     return None
 
 # Function to recommend movies based on selected movie
 def recommend(movie):
+    try:
+        movies = pickle.load(open(movies_file, 'rb'))
+        similarity = pickle.load(open(similarity_file, 'rb'))
+    except FileNotFoundError:
+        st.error("Error: Pickled data files not found. Please make sure the files exist.")
+        return [], []
+
     index = movies[movies['title'] == movie].index[0]
     distances = sorted(enumerate(similarity[index]), reverse=True, key=lambda x: x[1])
     recommended_movie_names = []
@@ -102,29 +118,23 @@ def recommend(movie):
 
     return recommended_movie_names, recommended_movie_posters
 
-# Load pickled data
-try:
-    movies = pickle.load(open('movies.pkl', 'rb'))
-    similarity = pickle.load(open('similarity.pkl', 'rb'))
-except FileNotFoundError:
-    st.error("Error: Pickled data files not found. Please make sure the files exist.")
-
 st.header('Movie Recommender System')
 
-if 'movies' in globals() and 'similarity' in globals():
-    movie_list = movies['title'].values
-    selected_movie = st.selectbox(
-        "Type or select a movie from the dropdown",
-        movie_list
-    )
-    if st.button('Show Recommendation'):
-        recommended_movie_names, recommended_movie_posters = recommend(selected_movie)
+movie_list = []
+selected_movie = st.selectbox(
+    "Type or select a movie from the dropdown",
+    movie_list
+)
+if st.button('Show Recommendation'):
+    recommended_movie_names, recommended_movie_posters = recommend(selected_movie)
 
-        num_columns = 5
-        col_list = st.columns(num_columns)
+    num_columns = 5
+    col_list = st.columns(num_columns)
 
-        for i in range(min(num_columns, len(recommended_movie_names))):
-            with col_list[i]:
-                st.text(recommended_movie_names[i])
-                st.image(recommended_movie_posters[i])
+    for i in range(min(num_columns, len(recommended_movie_names))):
+        with col_list[i]:
+            st.text(recommended_movie_names[i])
+            st.image(recommended_movie_posters[i])
 
+      
+        
