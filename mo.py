@@ -81,10 +81,6 @@ script_directory = os.path.dirname(os.path.abspath(__file__))
 movies_file = os.path.join(script_directory, 'movies.pkl')
 similarity_file = os.path.join(script_directory, 'similarity.pkl')
 
-print("Script Directory:", script_directory)
-print("Movies File Path:", movies_file)
-print("Similarity File Path:", similarity_file)
-
 # Function to fetch movie poster using TMDb API
 def fetch_poster(movie_id):
     # Replace 'YOUR_API_KEY' with your actual TMDb API key
@@ -123,7 +119,8 @@ def recommend(movie):
 
 st.header('Movie Recommender System')
 
-movie_list = []
+movie_list = [...]  # Define your movie list here
+
 selected_movie = st.selectbox(
     "Type or select a movie from the dropdown",
     movie_list
