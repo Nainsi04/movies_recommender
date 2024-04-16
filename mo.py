@@ -102,8 +102,8 @@ def fetch_poster(movie_id):
 # Function to recommend movies based on selected movie
 def recommend(movie):
     try:
-        movies = pickle.load(open(movies_file, 'rb'))
-        similarity = pickle.load(open(similarity_file, 'rb'))
+        movies = pickle.load(open(movies.pkl, 'rb'))
+        similarity = pickle.load(open(similarity.pkl, 'rb'))
     except FileNotFoundError:
         st.error("Error: Pickled data files not found. Please make sure the files exist.")
         return [], []
