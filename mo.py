@@ -70,10 +70,10 @@ if st.button('Show Recommendation'):
 #
 
 
+import os
 import pickle
 import streamlit as st
 import requests
-import os
 
 # Get the absolute path of the directory where this script is located
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -81,6 +81,10 @@ script_directory = os.path.dirname(os.path.abspath(__file__))
 # Define absolute paths to the pickled files
 movies_file = os.path.join(script_directory, 'movies.pkl')
 similarity_file = os.path.join(script_directory, 'similarity.pkl')
+
+print("Script Directory:", script_directory)
+print("Movies File Path:", movies_file)
+print("Similarity File Path:", similarity_file)
 
 # Function to fetch movie poster using TMDb API
 def fetch_poster(movie_id):
@@ -135,6 +139,3 @@ if st.button('Show Recommendation'):
         with col_list[i]:
             st.text(recommended_movie_names[i])
             st.image(recommended_movie_posters[i])
-
-      
-        
